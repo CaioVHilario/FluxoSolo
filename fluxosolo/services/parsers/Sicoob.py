@@ -12,6 +12,7 @@ all_rows = []
 
 
 with pdfplumber.open(CAMINHO_PDF) as pdf:
+
     for page in pdf.pages:
         tables = page.extract_tables()  # extrair tabelas das paginas
 
@@ -117,6 +118,12 @@ if all_rows:
         "Tipo",
     ]
 
+    # Adicionar ano a data (isso é provisório!!!)
+    df_pivot['Data'] = df_pivot['Data'] + '/2024'
+
+    # Convertendo para datetime
+    df_pivot['Data'] = pd.to_datetime(df_pivot['Data'], format='%d/%m/%Y')
+
     # Organizando df do resumo da fatura
     df_resumo.columns = [
         "Descricao",
@@ -129,3 +136,5 @@ if all_rows:
         )
     ]
 
+    print(df_extract)
+    print(df_pivot.to_string())
