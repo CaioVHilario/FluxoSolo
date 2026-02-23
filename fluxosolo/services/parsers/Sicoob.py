@@ -5,7 +5,7 @@ import numpy as np
 import pdfplumber
 
 CAMINHO_ATUAL = Path(__file__).resolve()
-RAIZ_DO_PROJETO = CAMINHO_ATUAL.parent.parent
+RAIZ_DO_PROJETO = CAMINHO_ATUAL.parent.parent.parent
 CAMINHO_PDF = RAIZ_DO_PROJETO / "data" / "sicoob_2024_02_21_10_58_48.pdf"
 
 all_rows = []
@@ -28,10 +28,11 @@ with pdfplumber.open(CAMINHO_PDF) as pdf:
             header = True
 
 if all_rows:
-    # concatena todos os dataframes em um só
+    # cria o dataframe para todas as tabeas extraidas do PDF
     df_extract = pd.DataFrame(all_rows)
 
-    df_extract.columns = ["Data", "Descricao", "Valor_texto"]
+    # nomeia colunas e preenche dados vazios com NaN
+    df_extract.columns = ["Data", "Transação", "Valor_texto"]
     df_extract = df_extract.replace(r"^\s*$", np.nan, regex=True)
 
     # Separa resumo do extrato das transações
@@ -50,7 +51,7 @@ if all_rows:
         "Pagamento Pix",
     ]
     df_transactions = df_transactions[
-        ~df_transactions["Descricao"].isin(valores_para_remover)
+        ~df_transactions["Transação"].isin(valores_para_remover)
     ]
 
     # Removendo linhas desnecessárias que contenham algumas das seguintes palavras
@@ -63,7 +64,7 @@ if all_rows:
     ]
     padrao_regex = "|".join(palavras_a_remover)
     df_transactions = df_transactions[
-        ~df_transactions["Descricao"].str.contains(
+        ~df_transactions["Transação"].str.contains(
             padrao_regex, na=False, case=False, regex=True
         )
     ]
@@ -89,7 +90,7 @@ if all_rows:
         df_transactions["Valor"],
     )
 
-    # Criando ID para cada transação e agrupando as transações
+    # Criando ID para cada transação e agrupa as transações
     df_transactions["Transaction_ID"] = (
         df_transactions["Data"].notna().cumsum()
     )
@@ -111,7 +112,7 @@ if all_rows:
     # Renomeia as colunas
     df_pivot.columns = [
         "Data",
-        "Descricao",
+        "Transação",
         "Detalhes",
         "Valor_texto",
         "Valor",
@@ -126,15 +127,18 @@ if all_rows:
 
     # Organizando df do resumo da fatura
     df_resumo.columns = [
-        "Descricao",
+        "Transação",
         "Valor",
     ]
 
     df_resumo = df_resumo[
-        ~df_resumo["Descricao"].str.contains(
+        ~df_resumo["Transação"].str.contains(
             'VENCIMENTO CHEQUE', na=False, case=False
         )
     ]
 
+    df_pivot = df_pivot.drop(['Valor_texto', 'Tipo'], axis=1)
+
     print(df_extract)
     print(df_pivot.to_string())
+    print(df_resumo)

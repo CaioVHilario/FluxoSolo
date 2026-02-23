@@ -1,18 +1,21 @@
-from pathlib import Path
 import pandas as pd
-import numpy as np
 
+from Base import BaseParser
 
-CAMINHO_ATUAL = Path(__file__).resolve()
-RAIZ_DO_PROJETO = CAMINHO_ATUAL.parent.parent.parent
-CAMINHO_PDF = RAIZ_DO_PROJETO / "data" / "NU_414920686_01JAN2026_31JAN2026.csv"
+class NubankParser(BaseParser):
+    def __init__(self, encoding):
+        self.encoding = encoding
 
-all_rows = []
+    def _extract_data(self, filepath):
+        #Lê arquivo csv
+        df_nubank = pd.read_csv(filepath, parse_dates=['Data'], date_format='%d/%m/%Y', encoding=self.encoding)
 
-df_nubank = pd.read_csv(CAMINHO_PDF, parse_dates=['Data'], date_format='%d/%m/%Y')
+        #austa colunas e renomeias
+        df_nubank[['Transação', 'Detalhes']] = df_nubank['Descrição'].str.split('-', expand=True, n=2).iloc[:, :2]
+        df_nubank = df_nubank.drop(['Identificador', 'Descrição'], axis=1)
+        df_nubank = df_nubank[['Data', 'Transação', 'Detalhes', 'Valor']]
 
-df_nubank[['Transação', 'Detalhes']] = df_nubank['Descrição'].str.split('-', expand=True, n=2).iloc[:, :2]
-df_nubank = df_nubank.drop(['Identificador', 'Descrição'], axis=1)
+        #print(df_nubank.to_string())
+        #print(df_nubank.dtypes)
 
-print(df_nubank.to_string())
-print(df_nubank.dtypes)
+        return df_nubank
