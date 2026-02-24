@@ -14,6 +14,7 @@ class Transaction:
     transaction: Mapped[str]
     value: Mapped[float] = mapped_column(Numeric(10, 2))
     bank: Mapped[str]
+    category: Mapped[str]
     details: Mapped[str | None] = mapped_column(default=None)
     created_at: Mapped[datetime] = mapped_column(
         init=False, server_default=func.now()

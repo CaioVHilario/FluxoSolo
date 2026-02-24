@@ -1,8 +1,8 @@
-"""ciração da tabela transactions
+"""Criando tabela de transações
 
-Revision ID: e79fe4624e38
+Revision ID: f129c959bbe7
 Revises: 
-Create Date: 2026-02-23 18:48:59.909473
+Create Date: 2026-02-24 18:08:39.046296
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'e79fe4624e38'
+revision: str = 'f129c959bbe7'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -26,6 +26,7 @@ def upgrade() -> None:
     sa.Column('date', sa.DateTime(), nullable=False),
     sa.Column('transaction', sa.String(), nullable=False),
     sa.Column('value', sa.Numeric(precision=10, scale=2), nullable=False),
+    sa.Column('bank', sa.String(), nullable=False),
     sa.Column('details', sa.String(), nullable=True),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
     sa.Column('updated_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),

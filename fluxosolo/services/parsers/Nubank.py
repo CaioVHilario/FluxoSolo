@@ -14,15 +14,35 @@ class NubankParser(BaseParser):
         df_nubank[['Transação', 'Detalhes']] = df_nubank['Descrição'].str.split('-', expand=True, n=2).iloc[:, :2]
         df_nubank = df_nubank.drop(['Identificador', 'Descrição'], axis=1)
 
+        # Renomeia colunas para inserir dataframen no banco de dados
         map_rename = {
             'Data': 'date',
             'Transação': 'transaction',
             'Detalhes': 'details',
             'Valor': 'value'
         }
-
         df_nubank = df_nubank.rename(columns=map_rename)
 
+        # Renomeia transações para padronizar com os outros bancos
+        df_nubank['transaction'] = df_nubank['transaction'].str.strip()
+        map_rename_transaction = {
+                'Compra no débito': 'Compra Débito',
+                'Transferência recebida pelo Pix': 'Pix Recebido',
+                'Pagamento de fatura': 'Pagamento Fatura Cartão',
+                'Transferência enviada pelo Pix': 'Pix Enviado'
+        }
+        df_nubank['transaction'] = df_nubank['transaction'].replace(map_rename_transaction)
+
+        # Cria a coluna category no dataframe
+        map_category = {
+                'Compra Débito': 'Despesas Variaveis',
+                'Pix Recebido': 'Receita',
+                'Pagamento Fatura Cartão': 'Cartão de credito',
+                'Pix Enviado': 'Transferência'
+        }
+        df_nubank['category'] = df_nubank['transaction'].replace(map_category)
+
+        # Adiciona coluna referente ao banco
         df_nubank['bank'] = 'NuBank'
 
         #print(df_nubank.to_string())

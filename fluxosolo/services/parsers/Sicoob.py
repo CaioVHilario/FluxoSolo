@@ -139,9 +139,9 @@ class SicoobParser(BaseParser):
                     'VENCIMENTO CHEQUE', na=False, case=False
                 )
             ]
-
             df_sicoob = df_sicoob.drop(['Valor_texto', 'Tipo'], axis=1)
 
+            # Renomeando colunas para armazenar no database
             map_rename = { 
                 'Data': 'date', 
                 'Transação': 'transaction', 
@@ -149,6 +149,41 @@ class SicoobParser(BaseParser):
                 'Valor': 'value'
             }
             df_sicoob = df_sicoob.rename(columns=map_rename)
+
+            # Renomeando as transaçãoes para padronizar com todos os bancos
+            df_sicoob['transaction'] = df_sicoob['transaction'].str.strip()
+            map_rename_transaction = {
+                'COMP MASTER MAESTRO': 'Compra Débito',
+                'CRED.TR.CT.INTERCRE': 'Crédito/Rendimento',
+                'PIX RECEB.OUTRA IF': 'Pix Recebido',
+                'DÉB.IOF': 'IOF',
+                'PIX EMIT.OUTRA IF': 'Pix Enviado',
+                'DB.TR.C.DIF.TIT.INT': 'Transferência Interna',
+                'DÉB.TIT.COMPE.EFETI': 'Pagamento Conta',
+                'JUROS CTA GARANTIDA': 'Juros',
+                'DEB PACOTE SERVIÇOS': 'Tarifa Bancária',
+                'DÉB.CONV.DEM.EMPRES': 'Pagamento Conta',
+                'CR ANT MSTD': 'Crédito/Rendimento',
+                'PIX.EMIT.OUT IF-MSM': 'Pix Enviado',
+                'DÉB.TRANSF.POU.INTE': 'Transferência Interna',
+                'SAQUE - BANCO24HORA': 'Saque'
+            }
+            df_sicoob['transaction'] = df_sicoob['transaction'].replace(map_rename_transaction)
+
+            # Criando coluna category
+            map_category = {
+                'Compra Débito': 'Despesas Variaveis',
+                'Crédito/Rendimento': 'Receita',
+                'Pix Recebido': 'Receita',
+                'IOF': 'Taxas Bancárias',
+                'Pix Enviado': 'Transferência',
+                'Transferência Interna': 'Transferência',
+                'Pagamento Conta': 'Despesas Fixas',
+                'Juros': 'Taxas Bancárias',
+                'Tarifa Bancária': 'Taxas Bancárias',
+                'Saque': 'Dinheiro'
+            }
+            df_sicoob['category'] = df_sicoob['transaction'].replace(map_category)
 
             df_sicoob['bank'] = 'Sicoob'
 

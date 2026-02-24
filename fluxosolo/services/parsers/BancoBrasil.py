@@ -4,20 +4,19 @@ import numpy as np
 
 from fluxosolo.services.parsers.Base import BaseParser
 
-CAMINHO_ATUAL = Path(__file__).resolve()
-RAIZ_DO_PROJETO = CAMINHO_ATUAL.parent.parent.parent
-CAMINHO_PDF = RAIZ_DO_PROJETO / "data" / "Extrato conta corrente - 012026.csv"
+# CAMINHO_ATUAL = Path(__file__).resolve()
+# RAIZ_DO_PROJETO = CAMINHO_ATUAL.parent.parent.parent
+# filepath = RAIZ_DO_PROJETO / "data" / "Extrato conta corrente - 082023.csv"
 
 class BancoBrasiParser(BaseParser):
     def __init__(self, encoding):
         self.encoding = encoding
 
     def _extract_data(self, filepath: str) -> pd.DataFrame:
-        
-        all_rows = []
 
         # Leo csv e armazena em dataframe
-        df_bancoBrasil = pd.read_csv(filepath, encoding=self.encoding, parse_dates=['Data'], date_format='%d/%m/%Y')
+        # df_bancoBrasil = pd.read_csv(filepath, encoding=self.encoding, parse_dates=['Data'], date_format='%d/%m/%Y')
+        df_bancoBrasil = pd.read_csv(filepath, encoding='latin-1', parse_dates=['Data'], date_format='%d/%m/%Y')
 
         # Renomeia as colunas do dataframe para nomes com caracteres normais e tira 
         # a coluna 'N documento'
@@ -39,6 +38,7 @@ class BancoBrasiParser(BaseParser):
         ]
 
         #Altera virgula por ponto e converte o tipo do valor pra float
+        df_bancoBrasil['value'] = df_bancoBrasil['value'].str.replace('.', '', regex=False)
         df_bancoBrasil['value'] = df_bancoBrasil['value'].str.replace(',', '.', regex=False)
         df_bancoBrasil['value'] = df_bancoBrasil['value'].astype(float)
 
@@ -56,10 +56,51 @@ class BancoBrasiParser(BaseParser):
         #limpa datafram de saldo
         df_saldo = df_saldo.drop(['details'], axis=1)
 
+        # Renomeia transações para padronizar com os outros bancos
+        df_bancoBrasil['transaction'] = df_bancoBrasil['transaction'].str.strip()
+        map_rename_transaction = {
+                'Tarifa MSG': 'Tarifa Bancária',
+                'Tarifa MSG - Mês Anterior': 'Tarifa Bancária',
+                'Pix - Recebido': 'Pix Recebido',
+                'Seguro de Vida': 'Seguro',
+                'Cobrança de Juros': 'Juros',
+                'Cobrança de I.O.F.': 'IOF',
+                'Compra com Cartão': 'Compra Débito',
+                'Saque no TAA': 'Saque',
+                'Recebimento Fornecedor': 'Crédito/Rendimento',
+                'Pix - Enviado': 'Pix Enviado',
+                'Pagto cartão crédito': 'Pagto Fatura Cartão',
+                'Pagamento de Impostos': 'Impostos e Tributos',
+                'TED Transf.Eletr.Disponiv': 'TED Enviado',
+                'TEDinternet': 'Cobrança TED',
+                'Estorno de Débito': 'Estorno'
+        }
+        df_bancoBrasil['transaction'] = df_bancoBrasil['transaction'].replace(map_rename_transaction)
+
+        # Criando coluna de categoria do gasto
+        map_category = {
+                'Tarifa Bancária': 'Taxas Bancárias',
+                'Tarifa Bancária': 'Taxas Bancárias',
+                'Pix Recebido': 'Receita',
+                'Seguro': 'Despesas Fixas',
+                'Juros': 'Taxas Bancárias',
+                'IOF': 'Taxas Bancárias',
+                'Compra Débito': 'Despesas Variaveis',
+                'Saque': 'Dinheiro',
+                'Crédito/Rendimento': 'Receita',
+                'Pix Enviado': 'Transferência',
+                'Pagto Fatura Cartão': 'Cartão de credito',
+                'Impostos e Tributos': 'Impostos',
+                'TED Enviado': 'Transferência',
+                'Cobrança TED': 'Taxas Bancarias',
+                'Estorno': 'Ajustes'
+        }
+        df_bancoBrasil['category'] = df_bancoBrasil['transaction'].replace(map_category)
+
         df_bancoBrasil['bank'] = 'Banco do Brasil'
 
-        #print(df_bancoBrasil.to_string())
-        #print(df_saldo.to_string())
-        #print(df_bancoBrasil.dtypes)
+        # print(df_bancoBrasil.to_string())
+        # print(df_saldo.to_string())
+        # print(df_bancoBrasil.dtypes)
 
         return df_bancoBrasil
