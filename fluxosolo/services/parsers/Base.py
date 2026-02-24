@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import pandas as pd
 
 class BaseParser(ABC):
-    DB_columns = ['Data', 'Transação', 'Detalhes', 'Valor']
+    DB_columns = ['date', 'transaction', 'details', 'value', 'bank']
 
     
     def parser(self, filepath: str) -> pd.DataFrame:

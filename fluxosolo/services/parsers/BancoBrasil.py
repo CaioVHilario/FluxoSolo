@@ -2,7 +2,7 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 
-from Base import BaseParser
+from fluxosolo.services.parsers.Base import BaseParser
 
 CAMINHO_ATUAL = Path(__file__).resolve()
 RAIZ_DO_PROJETO = CAMINHO_ATUAL.parent.parent.parent
@@ -12,41 +12,40 @@ class BancoBrasiParser(BaseParser):
     def __init__(self, encoding):
         self.encoding = encoding
 
-    def _extract_data(self, filepath):
+    def _extract_data(self, filepath: str) -> pd.DataFrame:
         
         all_rows = []
 
         # Leo csv e armazena em dataframe
-        df_bancoBrasil = pd.read_csv(CAMINHO_PDF, encoding=self.encoding, parse_dates=['Data'], date_format='%d/%m/%Y')
+        df_bancoBrasil = pd.read_csv(filepath, encoding=self.encoding, parse_dates=['Data'], date_format='%d/%m/%Y')
 
         # Renomeia as colunas do dataframe para nomes com caracteres normais e tira 
         # a coluna 'N documento'
         df_bancoBrasil.columns = [
-            "Data",
-            "Transação",
-            "Detalhes",
-            "N documento",
-            "Valor",
-            "Tipo Lançamento"
-
+            "date",
+            "transaction",
+            "details",
+            "document",
+            "value",
+            "type"
         ]
-        df_bancoBrasil = df_bancoBrasil.drop(['N documento'], axis=1)
-        df_bancoBrasil = df_bancoBrasil.drop(['Tipo Lançamento'], axis=1)
+        df_bancoBrasil = df_bancoBrasil.drop(['document'], axis=1)
+        df_bancoBrasil = df_bancoBrasil.drop(['type'], axis=1)
 
         # Tira linhas que não são referentes a entradas e saidas do extrato
         lancamentos_a_remover = ['Saldo do dia', 'Saldo Anterior']
         df_bancoBrasil = df_bancoBrasil[
-            ~df_bancoBrasil['Transação'].isin(lancamentos_a_remover)
+            ~df_bancoBrasil['transaction'].isin(lancamentos_a_remover)
         ]
 
         #Altera virgula por ponto e converte o tipo do valor pra float
-        df_bancoBrasil['Valor'] = df_bancoBrasil['Valor'].str.replace(',', '.', regex=False)
-        df_bancoBrasil['Valor'] = df_bancoBrasil['Valor'].astype(float)
+        df_bancoBrasil['value'] = df_bancoBrasil['value'].str.replace(',', '.', regex=False)
+        df_bancoBrasil['value'] = df_bancoBrasil['value'].astype(float)
 
-        df_bancoBrasil['Data'] = pd.to_datetime(df_bancoBrasil['Data'], format='%d/%m/%Y')
+        df_bancoBrasil['date'] = pd.to_datetime(df_bancoBrasil['date'], format='%d/%m/%Y')
 
         #Separa o dataframe com o saldo atual da conta  e extrato
-        filtro_saldo = df_bancoBrasil['Transação'].str.contains(
+        filtro_saldo = df_bancoBrasil['transaction'].str.contains(
             'S A L D O',
             case=False, 
             na=False
@@ -55,7 +54,9 @@ class BancoBrasiParser(BaseParser):
         df_bancoBrasil = df_bancoBrasil[~filtro_saldo].copy()
 
         #limpa datafram de saldo
-        df_saldo = df_saldo.drop(['Detalhes'], axis=1)
+        df_saldo = df_saldo.drop(['details'], axis=1)
+
+        df_bancoBrasil['bank'] = 'Banco do Brasil'
 
         #print(df_bancoBrasil.to_string())
         #print(df_saldo.to_string())
