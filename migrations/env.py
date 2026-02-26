@@ -1,9 +1,7 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-
 from alembic import context
+from sqlalchemy import engine_from_config, pool
 
 from fluxosolo.core.settings import Settings
 from fluxosolo.models.transactions import table_registry

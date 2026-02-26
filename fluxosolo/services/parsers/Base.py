@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
+
 import pandas as pd
+
 
 class BaseParser(ABC):
     DB_columns = ['date', 'transaction', 'details', 'value', 'bank', 'category']

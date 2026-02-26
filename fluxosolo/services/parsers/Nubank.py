@@ -2,6 +2,7 @@ import pandas as pd
 
 from fluxosolo.services.parsers.Base import BaseParser
 
+
 class NubankParser(BaseParser):
     def __init__(self, encoding):
         self.encoding = encoding
@@ -36,7 +37,7 @@ class NubankParser(BaseParser):
         # Cria a coluna category no dataframe
         map_category = {
                 'Compra Débito': 'Despesas Variaveis',
-                'Pix Recebido': 'Receita',
+                'Pix Recebido': 'Pix',
                 'Pagamento Fatura Cartão': 'Cartão de credito',
                 'Pix Enviado': 'Transferência'
         }

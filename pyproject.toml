@@ -14,7 +14,8 @@ dependencies = [
     "pydantic-settings (>=2.12.0,<3.0.0)",
     "pandas (>=2.2.0,<3.0.0)",
     "pdfplumber (>=0.11.9,<0.12.0)",
-    "streamlit (>=1.54.0,<2.0.0)"
+    "streamlit (>=1.54.0,<2.0.0)",
+    "plotly (>=6.5.2,<7.0.0)"
 ]
 
 
@@ -48,4 +49,4 @@ format = 'ruff format'
 run = 'fastapi dev fluxosolo/app.py'
 pre_test = 'task lint'
 test = 'pytest -s -x --cov=fluxosolo -vv'
-dashboard = 'streamlit run app/views/dashboard.py'
+dashboard = 'streamlit run fluxosolo/views/dashboard.py'

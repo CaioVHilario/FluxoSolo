@@ -1,44 +1,48 @@
 # FluxoSolo 🚀
 
-FluxoSolo é uma aplicação de inteligência financeira desenvolvida especificamente para trabalhadores autônomos e profissionais liberais. O projeto automatiza a gestão de gastos e receitas a partir da extração direta de extratos bancários em PDF, transformando dados brutos em insights visuais acionáveis.
+**FluxoSolo** é um pipeline de ETL (*Extract, Transform, Load*) e dashboard financeiro desenvolvido para transformar o caos de extratos bancários em inteligência de negócio para trabalhadores autônomos e profissionais liberais.
 
-Este projeto faz parte do meu portfólio de transição de carreira para o Desenvolvimento Backend, aplicando conceitos de processamento de dados, modelagem de banco de dados e automação de tarefas.
+Diferente de planilhas manuais, o FluxoSolo automatiza a ingestão de dados brutos (PDF/CSV), aplicando regras de normalização e persistência em um banco de dados relacional para análise histórica e visualização de fluxo de caixa.
 
-## ✨ Funcionalidades
+---
 
-- Extração Inteligente: Leitura de extratos bancários (PDF) utilizando pdfplumber com normalização de dados.
+## 🛠️ Engenharia e Arquitetura de Dados
 
-- Data Cleaning: Pipeline de limpeza e padronização de valores monetários e datas com Pandas.
+O diferencial técnico deste projeto reside na sua **escalabilidade e aplicação de padrões de projeto**:
 
-- Persistência Robusta: Gerenciamento de usuários e transações via SQLAlchemy e banco de dados relacional.
+* **Abstração de Parsers:** Utilização de **Classes Abstratas (ABC)** para definir o contrato de extração. Isso permite que novos bancos (Sicoob, NuBank, BB) sejam adicionados apenas implementando métodos específicos, mantendo o núcleo da aplicação (Core) intacto.
+* **Resiliência de Ingestão:** Lógica avançada para lidar com variações de *encoding* (UTF-8 e Latin-1) e caracteres invisíveis de sistema (BOM), garantindo a leitura correta de extratos de bancos tradicionais e fintechs.
+* **Camada de Persistência:** Implementação de um ORM com **SQLAlchemy** para garantir a integridade referencial e facilitar futuras migrações de banco de dados (ex: SQLite para PostgreSQL).
+* **Data Cleaning:** Pipeline com Pandas para limpeza de caracteres especiais, conversão de tipos (casting) e padronização de sinais monetários para análise estatística.
 
-- Dashboard Interativo: Visualização de fluxo de caixa e categorização de gastos através do Streamlit.
+## ✨ Funcionalidades Principais
 
-- Qualidade de Código: Ambiente rigorosamente configurado com ferramentas de linting e testes automatizados.
+* ✅ **Ingestão Multi-formato:** Suporte a extratos em PDF (via `pdfplumber`) e CSV.
+* ✅ **ETL Automático:** Normalização de datas e valores para um formato padrão de banco de dados.
+* ✅ **Dashboard Interativo:** Visualização dinâmica de Receitas vs. Despesas e categorização de fluxo com **Plotly**.
+* ✅ **Validação de Dados:** Interface que apresenta um *preview* dos dados limpos antes da persistência final no banco.
 
-## 🛠️ Stack Tecnológica
+## 🧰 Stack Tecnológica
 
-- Linguagem: Python 3.12+
-
-- Gestão de Dependências: Poetry
-
-- Processamento de Dados: Pandas, pdfplumber
-
-- ORM: SQLAlchemy
-
-- Interface: Streamlit
-
-- QA/Tooling: Pytest, Ruff (Linter/Formatter), Taskipy (Task Runner)
+* **Linguagem:** Python 3.12+
+* **Gestão de Dependências:** Poetry
+* **Processamento de Dados:** Pandas, pdfplumber
+* **Banco de Dados:** SQLAlchemy, SQLite
+* **Interface e Visualização:** Streamlit, Plotly
+* **Qualidade de Código:** Pytest, Ruff (Linter/Formatter), Taskipy
 
 ## 🏗️ Estrutura do Projeto
 
 ```bash
-├── app/
-│   ├── core/         # Configurações de banco de dados e modelos
-│   ├── services/     # Lógica de extração (Parser) e limpeza (Pandas)
-│   └── main.py       # Interface Streamlit
-├── data/             # Armazenamento local de arquivos (ignorado no git)
-├── tests/            # Testes unitários e de integração
+├── fluxosolo/
+│   ├── core/         # Configurações de engine, modelos e sessões de banco
+│   ├── data/         # Extratos gerados para teste da aplicação
+│   ├── models/       # Criação da tabela do banco de dados
+│   ├── services/     # Lógica de negócio: Parsers (Abstract Classes) e pipeline ETL
+│   ├── views/        # Frontend Streamlit e componentes de visualização
+│   └── app.py        # Ponto de entrada da aplicação
+├── tests/            # Testes unitários focados na lógica de limpeza de dados
+├── migrations/       # Migração de banco de dados via alembic
 └── pyproject.toml    # Configuração de ferramentas e dependências
 ```
 
@@ -65,10 +69,12 @@ Pré-requisitos: Ter o Python e o Poetry instalados.
     poetry run task run
 ```
 
-## 🧪 Testes e Qualidade
+## Próximos passos
 
-Para garantir a confiabilidade do processamento financeiro, o projeto utiliza:
+[ ] Normalização para 3NF: Reestruturação do esquema SQL para garantir integridade referencial e eficiência.
 
-```task lint```: Executa o Ruff para análise estática.
+[ ] Consolidação de Cartão de Crédito: Lógica de merge para evitar dupla contagem entre pagamento de fatura e transações individuais.
 
-```task test```: Executa o conjunto de testes com Pytest.
+[ ] Expansão da Biblioteca de Parsers: Implementação de conectores para Inter, Santander e Itaú.
+
+[ ] Advanced Analytics: Dashboard com filtros dinâmicos por período, banco e centro de custos.

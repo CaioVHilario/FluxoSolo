@@ -1,6 +1,4 @@
-from pathlib import Path
 import pandas as pd
-import numpy as np
 
 from fluxosolo.services.parsers.Base import BaseParser
 
@@ -80,19 +78,18 @@ class BancoBrasiParser(BaseParser):
         # Criando coluna de categoria do gasto
         map_category = {
                 'Tarifa Bancária': 'Taxas Bancárias',
-                'Tarifa Bancária': 'Taxas Bancárias',
-                'Pix Recebido': 'Receita',
+                'Pix Recebido': 'Pix',
                 'Seguro': 'Despesas Fixas',
                 'Juros': 'Taxas Bancárias',
                 'IOF': 'Taxas Bancárias',
                 'Compra Débito': 'Despesas Variaveis',
                 'Saque': 'Dinheiro',
-                'Crédito/Rendimento': 'Receita',
+                'Crédito/Rendimento': 'Salário',
                 'Pix Enviado': 'Transferência',
                 'Pagto Fatura Cartão': 'Cartão de credito',
                 'Impostos e Tributos': 'Impostos',
                 'TED Enviado': 'Transferência',
-                'Cobrança TED': 'Taxas Bancarias',
+                'Cobrança TED': 'Taxas Bancárias',
                 'Estorno': 'Ajustes'
         }
         df_bancoBrasil['category'] = df_bancoBrasil['transaction'].replace(map_category)

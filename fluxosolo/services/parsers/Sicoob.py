@@ -1,7 +1,5 @@
-from pathlib import Path
-import pandas as pd
 import numpy as np
-
+import pandas as pd
 import pdfplumber
 
 from fluxosolo.services.parsers.Base import BaseParser
@@ -163,7 +161,7 @@ class SicoobParser(BaseParser):
                 'JUROS CTA GARANTIDA': 'Juros',
                 'DEB PACOTE SERVIÇOS': 'Tarifa Bancária',
                 'DÉB.CONV.DEM.EMPRES': 'Pagamento Conta',
-                'CR ANT MSTD': 'Crédito/Rendimento',
+                'CR ANT MSTD': 'Ganho Cartão de Credito',
                 'PIX.EMIT.OUT IF-MSM': 'Pix Enviado',
                 'DÉB.TRANSF.POU.INTE': 'Transferência Interna',
                 'SAQUE - BANCO24HORA': 'Saque'
@@ -172,9 +170,10 @@ class SicoobParser(BaseParser):
 
             # Criando coluna category
             map_category = {
+                'Ganho Cartão de Credito': 'Cartão de Credito',
                 'Compra Débito': 'Despesas Variaveis',
-                'Crédito/Rendimento': 'Receita',
-                'Pix Recebido': 'Receita',
+                'Crédito/Rendimento': 'Credito/Rendimento',
+                'Pix Recebido': 'Pix',
                 'IOF': 'Taxas Bancárias',
                 'Pix Enviado': 'Transferência',
                 'Transferência Interna': 'Transferência',

@@ -1,13 +1,15 @@
 from pathlib import Path
+
 import pdfplumber
 
-from fluxosolo.services.parsers.Nubank import NubankParser
 from fluxosolo.services.parsers.BancoBrasil import BancoBrasiParser
+from fluxosolo.services.parsers.Nubank import NubankParser
 from fluxosolo.services.parsers.Sicoob import SicoobParser
+
 
 def detect_bank_parser(filepath: str | Path):
 
-    if filepath.suffix.lower() == '.pdf':
+    if filepath.name.lower().endswith('.pdf'):
         page_num = 0
         try:
             with pdfplumber.open(filepath) as pdf:
@@ -22,13 +24,16 @@ def detect_bank_parser(filepath: str | Path):
             raise ValueError(f"Error reading PDF for detection {e}")
 
 
-    elif filepath.suffix.lower() == '.csv':
+    elif filepath.name.lower().endswith('.csv'):
         encodings_to_try = ['utf-8', 'latin-1', 'cp1252']
 
         for encoding in encodings_to_try:
             try:
-                with open(filepath, 'r', encoding=encoding) as f:
-                    header_line = f.readline().strip()
+                filepath.seek(0)
+
+                line_bytes = filepath.readline()
+                header_line = line_bytes.decode(encoding)
+                filepath.seek(0)
                 detected_encoding = encoding
                 break
             except UnicodeDecodeError:
