@@ -1,14 +1,17 @@
 import pandas as pd
+import sqlalchemy.exc as OperationalError
 import streamlit as st
 
 
 def verify_database(df: pd.DataFrame):
 
-    conn = st.connection('sql')
+    conn = st.connection("sql")
 
-    init_date = df['date'].min()
-    end_date = df['date'].max()
-    bank = df['bank'].min()
+    params = {
+        "init": str(df["date"].min()),
+        "end": str(df["date"].max()),
+        "bank": str(df["bank"].min()),
+    }
 
     query_verification_extract = """
         SELECT COUNT(*) as 'total' FROM transactions
@@ -16,21 +19,9 @@ def verify_database(df: pd.DataFrame):
         AND bank = :bank
     """
 
-    try: 
+    try:
+        df_check = conn.query(query_verification_extract, params=params, ttl=0)
+        return int(df_check["total"].iloc[0])
 
-        df_check = conn.query(
-            query_verification_extract,
-            params={
-                'init': str(init_date), 
-                'end': str(end_date), 
-                'bank': str(bank)
-            },
-            ttl=0
-        )
-        qtd_exists = df_check['total'].iloc[0]
-    
-    except Exception:
-
-        qtd_exists = 0
-    
-    return qtd_exists
+    except OperationalError:
+        return 0

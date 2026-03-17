@@ -6,18 +6,17 @@ from fluxosolo.services.parsers.Base import BaseParser
 
 
 class SicoobParser(BaseParser):
-
     def _extract_data(self, filepath: str) -> pd.DataFrame:
-            
+
         all_rows = []
 
-
         with pdfplumber.open(filepath) as pdf:
-
             for page in pdf.pages:
                 tables = page.extract_tables()  # extrair tabelas das paginas
 
-                header = False  # Para pular a primeira tabela de cabeçalho do PDF
+                header = (
+                    False  # Para pular a primeira tabela de cabeçalho do PDF
+                )
 
                 # loop para criar um dict para cada tabela
                 for table in tables:
@@ -100,7 +99,9 @@ class SicoobParser(BaseParser):
             ).cumcount()
 
             # Remove restante das linhas com informações desnecessárias para fazer o pivot
-            df_transactions = df_transactions[df_transactions["num_linhas"] <= 1]
+            df_transactions = df_transactions[
+                df_transactions["num_linhas"] <= 1
+            ]
 
             # Pivot do df para criar a colua "Detalhes"
             df_sicoob = df_transactions.pivot(
@@ -121,10 +122,12 @@ class SicoobParser(BaseParser):
             ]
 
             # Adicionar ano a data (isso é provisório!!!)
-            df_sicoob['Data'] = df_sicoob['Data'] + '/2024'
+            df_sicoob["Data"] = df_sicoob["Data"] + "/2024"
 
             # Convertendo para datetime
-            df_sicoob['Data'] = pd.to_datetime(df_sicoob['Data'], format='%d/%m/%Y')
+            df_sicoob["Data"] = pd.to_datetime(
+                df_sicoob["Data"], format="%d/%m/%Y"
+            )
 
             # Organizando df do resumo da fatura
             df_resumo.columns = [
@@ -134,60 +137,64 @@ class SicoobParser(BaseParser):
 
             df_resumo = df_resumo[
                 ~df_resumo["Transação"].str.contains(
-                    'VENCIMENTO CHEQUE', na=False, case=False
+                    "VENCIMENTO CHEQUE", na=False, case=False
                 )
             ]
-            df_sicoob = df_sicoob.drop(['Valor_texto', 'Tipo'], axis=1)
+            df_sicoob = df_sicoob.drop(["Valor_texto", "Tipo"], axis=1)
 
             # Renomeando colunas para armazenar no database
-            map_rename = { 
-                'Data': 'date', 
-                'Transação': 'transaction', 
-                'Detalhes': 'details', 
-                'Valor': 'value'
+            map_rename = {
+                "Data": "date",
+                "Transação": "transaction",
+                "Detalhes": "details",
+                "Valor": "value",
             }
             df_sicoob = df_sicoob.rename(columns=map_rename)
 
             # Renomeando as transaçãoes para padronizar com todos os bancos
-            df_sicoob['transaction'] = df_sicoob['transaction'].str.strip()
+            df_sicoob["transaction"] = df_sicoob["transaction"].str.strip()
             map_rename_transaction = {
-                'COMP MASTER MAESTRO': 'Compra Débito',
-                'CRED.TR.CT.INTERCRE': 'Crédito/Rendimento',
-                'PIX RECEB.OUTRA IF': 'Pix Recebido',
-                'DÉB.IOF': 'IOF',
-                'PIX EMIT.OUTRA IF': 'Pix Enviado',
-                'DB.TR.C.DIF.TIT.INT': 'Transferência Interna',
-                'DÉB.TIT.COMPE.EFETI': 'Pagamento Conta',
-                'JUROS CTA GARANTIDA': 'Juros',
-                'DEB PACOTE SERVIÇOS': 'Tarifa Bancária',
-                'DÉB.CONV.DEM.EMPRES': 'Pagamento Conta',
-                'CR ANT MSTD': 'Ganho Cartão de Credito',
-                'PIX.EMIT.OUT IF-MSM': 'Pix Enviado',
-                'DÉB.TRANSF.POU.INTE': 'Transferência Interna',
-                'SAQUE - BANCO24HORA': 'Saque'
+                "COMP MASTER MAESTRO": "Compra Débito",
+                "CRED.TR.CT.INTERCRE": "Crédito/Rendimento",
+                "PIX RECEB.OUTRA IF": "Pix Recebido",
+                "DÉB.IOF": "IOF",
+                "PIX EMIT.OUTRA IF": "Pix Enviado",
+                "DB.TR.C.DIF.TIT.INT": "Transferência Interna",
+                "DÉB.TIT.COMPE.EFETI": "Pagamento Conta",
+                "JUROS CTA GARANTIDA": "Juros",
+                "DEB PACOTE SERVIÇOS": "Tarifa Bancária",
+                "DÉB.CONV.DEM.EMPRES": "Pagamento Conta",
+                "CR ANT MSTD": "Ganho Cartão de Credito",
+                "PIX.EMIT.OUT IF-MSM": "Pix Enviado",
+                "DÉB.TRANSF.POU.INTE": "Transferência Interna",
+                "SAQUE - BANCO24HORA": "Saque",
             }
-            df_sicoob['transaction'] = df_sicoob['transaction'].replace(map_rename_transaction)
+            df_sicoob["transaction"] = df_sicoob["transaction"].replace(
+                map_rename_transaction
+            )
 
             # Criando coluna category
             map_category = {
-                'Ganho Cartão de Credito': 'Cartão de Credito',
-                'Compra Débito': 'Despesas Variaveis',
-                'Crédito/Rendimento': 'Credito/Rendimento',
-                'Pix Recebido': 'Pix',
-                'IOF': 'Taxas Bancárias',
-                'Pix Enviado': 'Transferência',
-                'Transferência Interna': 'Transferência',
-                'Pagamento Conta': 'Despesas Fixas',
-                'Juros': 'Taxas Bancárias',
-                'Tarifa Bancária': 'Taxas Bancárias',
-                'Saque': 'Dinheiro'
+                "Ganho Cartão de Credito": "Cartão de Credito",
+                "Compra Débito": "Despesas Variaveis",
+                "Crédito/Rendimento": "Credito/Rendimento",
+                "Pix Recebido": "Pix",
+                "IOF": "Taxas Bancárias",
+                "Pix Enviado": "Transferência",
+                "Transferência Interna": "Transferência",
+                "Pagamento Conta": "Despesas Fixas",
+                "Juros": "Taxas Bancárias",
+                "Tarifa Bancária": "Taxas Bancárias",
+                "Saque": "Dinheiro",
             }
-            df_sicoob['category'] = df_sicoob['transaction'].replace(map_category)
+            df_sicoob["category"] = df_sicoob["transaction"].replace(
+                map_category
+            )
 
-            df_sicoob['bank'] = 'Sicoob'
+            df_sicoob["bank"] = "Sicoob"
 
-            #print(df_extract)
-            #print(df_sicoob.to_string())
-            #print(df_resumo)
+            # print(df_extract)
+            # print(df_sicoob.to_string())
+            # print(df_resumo)
 
             return df_sicoob

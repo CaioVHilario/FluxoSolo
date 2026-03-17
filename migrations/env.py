@@ -11,7 +11,7 @@ from fluxosolo.models.transactions import table_registry
 config = context.config
 
 # Configura a URL do banco dinamicamente usando sua classe Settings
-config.set_main_option('sqlalchemy.url', Settings().DATABASE_URL)
+config.set_main_option("sqlalchemy.url", Settings().DATABASE_URL)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -69,7 +69,7 @@ def run_migrations_online() -> None:
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, 
+            connection=connection,
             target_metadata=target_metadata,
             render_as_batch=True,
         )
