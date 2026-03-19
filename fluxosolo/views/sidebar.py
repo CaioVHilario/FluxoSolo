@@ -29,20 +29,48 @@ def side_bar():
             popup_data_confirmation(df_new)
 
 
-def filter_sidebar(month_list, df_raw):
+def filter_sidebar(df_raw, month_list, year_list):
     st.sidebar.header("Filtros")
 
-    month_year_selected = st.sidebar.selectbox(
-        "Selecione o mês/ano", month_list
-    )   
+    year_selected = st.sidebar.selectbox(
+        "Selecione o ano", year_list
+    )
 
-    if month_year_selected != "Todos":
-        # month_clean = str(month_year_selected).strip()
+    month_dict = {
+        'Todos': "Todos",
+        1: "Janeiro",
+        2: "Fevereiro",
+        3: "Março",
+        4: "Abril",
+        5: "Maio",
+        6: "Junho",
+        7: "Julho",
+        8: "Agosto",
+        9: "Setembro",
+        10: "Outubro",
+        11: "Novembro",
+        12: "Dezembro",
+    }
 
-        df_filtered = df_raw[
-            df_raw["month_year"] == month_year_selected
+    month_selected = st.sidebar.selectbox(
+        "Selecione o mês", month_dict.values()
+    )  
+    month_selected = list(month_dict.keys())[
+        list(month_dict.values()).index(month_selected)
+    ]
+
+    # year_clean = str(year_selected).strip()
+    # month_clean = str(month_selected).strip()
+
+    df_year = df_raw[
+        df_raw["year"] == year_selected
+    ].copy()
+
+    if month_selected != "Todos":
+        df_filtered = df_year[
+            df_year["month"] == month_selected
         ].copy()
     else:
-        df_filtered = df_raw.copy()
+        df_filtered = df_year.copy()
 
-    return df_filtered, month_year_selected
+    return df_filtered, df_year, month_selected, year_selected
