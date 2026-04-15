@@ -10,6 +10,8 @@ from fluxosolo.services.parsers.Sicoob import SicoobParser
 
 def detect_bank_parser(filepath: str | Path):
 
+    # verifica se é pdf e em seguida verifica se é um extrato do sicoob para 
+    # usar seu parser
     if filepath.name.lower().endswith(".pdf"):
         page_num = 0
         try:
@@ -29,6 +31,8 @@ def detect_bank_parser(filepath: str | Path):
         ) as e:
             raise ValueError(f"Error reading PDF for detection {e}")
 
+    # verifica se é um .csv e se for vê se é um extrato do BB ou NuBank para 
+    # usar op respectivo parser
     elif filepath.name.lower().endswith(".csv"):
         encodings_to_try = ["utf-8", "latin-1", "cp1252"]
 

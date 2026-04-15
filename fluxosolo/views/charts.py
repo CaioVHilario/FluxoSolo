@@ -1,51 +1,51 @@
-import pandas as pd
 import plotly.express as px
 import streamlit as st
 
 # ------------------------------ Métricas --------------------------------------
 
 
-def print_metrics_outgoing(outgoing, month_selected, year_selected, difference):
+def print_metrics_outgoing(
+    outgoing, month_selected, year_selected, difference
+):
 
-    month_year = f'{month_selected}/{year_selected}'
-    month_or_year = 'mês'
-    if month_selected == 'Todos':
-        month_or_year = 'ano'
+    month_year = f"{month_selected}/{year_selected}"
+    month_or_year = "mês"
+    if month_selected == "Todos":
+        month_or_year = "ano"
         month_year = year_selected
 
     if outgoing == difference:
         difference = 0
 
-    value=f'R$ {difference:,.2f} que o {month_or_year} anterior'
+    value = f"R$ {difference:,.2f} que o {month_or_year} anterior"
     if difference > 0:
-        color = 'red'
+        color = "red"
     elif difference == 0:
-        value=''
-        color='grey'
+        value = ""
+        color = "grey"
     else:
-        color = 'green'
+        color = "green"
 
     st.metric(
         f"Despesas do {month_or_year} - {month_year}",
         f"R$ {outgoing:,.2f}",
         value,
-        delta_color=color
+        delta_color=color,
     )
 
 
 def print_metrics_income(income, month_selected, year_selected, difference):
 
-    month_year = f'{month_selected}/{year_selected}'
-    month_or_year = 'mês'
-    if month_selected == 'Todos':
-        month_or_year = 'ano'
+    month_year = f"{month_selected}/{year_selected}"
+    month_or_year = "mês"
+    if month_selected == "Todos":
+        month_or_year = "ano"
         month_year = year_selected
 
-
-    value=f'R$ {difference:,.2f} que o {month_or_year} anterior'
+    value = f"R$ {difference:,.2f} que o {month_or_year} anterior"
     if income == difference:
         difference = 0
-        value=''
+        value = ""
 
     st.metric(
         f"Receitas do {month_or_year} - {month_year}",
@@ -53,13 +53,16 @@ def print_metrics_income(income, month_selected, year_selected, difference):
         value,
     )
 
+
 # --------------------------- Gráficos de donut --------------------------------
 
 
-def plot_chart_donut_category_outgoing(df_donut_outgoing, month_selected, year_selected):
+def plot_chart_donut_category_outgoing(
+    df_donut_outgoing, month_selected, year_selected
+):
 
-    month_year = f'{month_selected}/{year_selected}'
-    if month_selected == 'Todos':
+    month_year = f"{month_selected}/{year_selected}"
+    if month_selected == "Todos":
         month_year = year_selected
 
     fig_chart_donut_outgoing = px.pie(
@@ -72,22 +75,24 @@ def plot_chart_donut_category_outgoing(df_donut_outgoing, month_selected, year_s
     )
 
     fig_chart_donut_outgoing.update_layout(
-        legend=dict(
-            orientation='h',
-            yanchor='top',
-            y=-0.1,
-            xanchor='center',
-            x=0.5
-        )
+        legend={
+            "orientation": "h",
+            "yanchor": "top",
+            "y": -0.1,
+            "xanchor": "center",
+            "x": 0.5,
+        }
     )
 
     st.plotly_chart(fig_chart_donut_outgoing, width="stretch")
 
 
-def plot_chart_donut_category_income(df_donut_income, month_selected, year_selected):
+def plot_chart_donut_category_income(
+    df_donut_income, month_selected, year_selected
+):
 
-    month_year = f'{month_selected}/{year_selected}'
-    if month_selected == 'Todos':
+    month_year = f"{month_selected}/{year_selected}"
+    if month_selected == "Todos":
         month_year = year_selected
 
     fig_chart_donut_income = px.pie(
@@ -100,16 +105,17 @@ def plot_chart_donut_category_income(df_donut_income, month_selected, year_selec
     )
 
     fig_chart_donut_income.update_layout(
-        legend=dict(
-            orientation='h',
-            yanchor='top',
-            y=-0.1,
-            xanchor='center',
-            x=0.5
-        )
+        legend={
+            "orientation": "h",
+            "yanchor": "top",
+            "y": -0.1,
+            "xanchor": "center",
+            "x": 0.5,
+        }
     )
 
     st.plotly_chart(fig_chart_donut_income, width="stretch")
+
 
 # --------------------------- Gráfico de linha ---------------------------------
 
@@ -129,11 +135,12 @@ def plot_chart_line_evolution_transactions(df_chart, year_selected):
     fig_chart_line.update_layout(yaxis_tickprefix="R$ ")
 
     fig_chart_line.update_xaxes(
-        dtick=1,           # Pula a legenda de 2 em 2 (mostra mês sim, mês não)
+        dtick=1,  # Pula a legenda de 2 em 2 (mostra mês sim, mês não)
     )
 
     st.subheader(f"Evolução Financeira de {year_selected}: Ganhos VS Gastos")
     st.plotly_chart(fig_chart_line, width="stretch")
+
 
 # ------------------------ Histórico de transações ------------------------------
 
