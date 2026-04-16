@@ -7,7 +7,7 @@ import pandas as pd
 class BaseParser(ABC):
     DB_columns: ClassVar[list[str]] = [
         "date",
-        "transaction",
+        "transaction_type",
         "details",
         "value",
         "bank",

@@ -22,11 +22,11 @@ class BancoBrasiParser(BaseParser):
             date_format="%d/%m/%Y",
         )
 
-        # Renomeia as colunas do dataframe para nomes com caracteres normais e tira
-        # a coluna 'N documento'
+        # Renomeia as colunas do dataframe para nomes com caracteres normais 
+        # e tira a coluna 'N documento'
         df_bancoBrasil.columns = [
             "date",
-            "transaction",
+            "transaction_type",
             "details",
             "document",
             "value",
@@ -38,7 +38,7 @@ class BancoBrasiParser(BaseParser):
         # Tira linhas que não são referentes a entradas e saidas do extrato
         lancamentos_a_remover = ["Saldo do dia", "Saldo Anterior"]
         df_bancoBrasil = df_bancoBrasil[
-            ~df_bancoBrasil["transaction"].isin(lancamentos_a_remover)
+            ~df_bancoBrasil["transaction_type"].isin(lancamentos_a_remover)
         ]
 
         # Altera virgula por ponto e converte o tipo do valor pra float
@@ -55,7 +55,7 @@ class BancoBrasiParser(BaseParser):
         )
 
         # Separa o dataframe com o saldo atual da conta  e extrato
-        filtro_saldo = df_bancoBrasil["transaction"].str.contains(
+        filtro_saldo = df_bancoBrasil["transaction_type"].str.contains(
             "S A L D O", case=False, na=False
         )
         df_saldo = df_bancoBrasil[filtro_saldo].copy()
@@ -65,8 +65,8 @@ class BancoBrasiParser(BaseParser):
         df_saldo = df_saldo.drop(["details"], axis=1)
 
         # Renomeia transações para padronizar com os outros bancos
-        df_bancoBrasil["transaction"] = df_bancoBrasil[
-            "transaction"
+        df_bancoBrasil["transaction_type"] = df_bancoBrasil[
+            "transaction_type"
         ].str.strip()
         map_rename_transaction = {
             "Tarifa MSG": "Tarifa Bancária",
@@ -85,7 +85,7 @@ class BancoBrasiParser(BaseParser):
             "TEDinternet": "Cobrança TED",
             "Estorno de Débito": "Estorno",
         }
-        df_bancoBrasil["transaction"] = df_bancoBrasil["transaction"].replace(
+        df_bancoBrasil["transaction_type"] = df_bancoBrasil["transaction_type"].replace(
             map_rename_transaction
         )
 
@@ -106,7 +106,7 @@ class BancoBrasiParser(BaseParser):
             "Cobrança TED": "Taxas Bancárias",
             "Estorno": "Ajustes",
         }
-        df_bancoBrasil["category"] = df_bancoBrasil["transaction"].replace(
+        df_bancoBrasil["category"] = df_bancoBrasil["transaction_type"].replace(
             map_category
         )
 

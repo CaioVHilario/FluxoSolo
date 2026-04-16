@@ -104,7 +104,7 @@ def prepare_data_metrics_outgoing(
 
     elif month_selected != 1:
         df_year = df_raw[df_raw["year"] == year_selected]
-        before_month = df_year[df_raw["month"] == int(month_selected) - 1]
+        before_month = df_year[df_year["month"] == int(month_selected) - 1]
         before_month = before_month[before_month["type"] == "Gastos"]
         outgoing_before = before_month["absolut_value"].sum()
         difference = outgoing - outgoing_before
@@ -136,7 +136,7 @@ def prepare_data_metrics_income(
 
     elif month_selected != 1:
         df_year = df_raw[df_raw["year"] == year_selected]
-        before_month = df_year[df_raw["month"] == int(month_selected) - 1]
+        before_month = df_year[df_year["month"] == int(month_selected) - 1]
         before_month = before_month[before_month["type"] == "Ganhos"]
         income_before = before_month["absolut_value"].sum()
         difference = income - income_before

@@ -1,22 +1,11 @@
 import pandas as pd
 
 from fluxosolo.core.database import engine
+from fluxosolo.services.read_db import read_id_and_name_from_table
 from fluxosolo.services.transform_df import (
     df_with_new_values, add_fk_id_column
 )
 
-
-def save_tables(df, table):
-
-    if df is not None:
-        df.to_sql(
-            f"{table}",
-            con=engine,
-            if_exists="append",
-            index=False,
-            method="multi",
-            chunksize=500
-        )
 
 def persist_on_db(df: pd.DataFrame):
     # Garante que a data está em datetime no dataframe
@@ -25,33 +14,36 @@ def persist_on_db(df: pd.DataFrame):
 
     print("Colocando dados no banco de dados...")
 
-    df_category = df_with_new_values(df, 'category', 'categories')
-    df_transaction_type = df_with_new_values(
-        df, 'transaction', 'transactions_type'
-    )
-    df_bank = df_with_new_values(df, 'bank', 'banks')
+    df_transaction = df.rename(columns={
+        'category': 'category_id',
+        'transaction_type': 'transaction_type_id',
+        'bank': 'bank_id'
+    })
 
-    save_tables(df_category, 'categories')
-    save_tables(df_transaction_type, 'transactions_type')
-    save_tables(df_bank, 'banks')
+    dict_tables = {
+        'category': 'categories',
+        'transaction_type': 'transactions_type',
+        'bank': 'banks'
+    }
 
-    df_transaction = df.rename(
-        columns={
-            'category': 'category_id',
-            'transaction': 'transaction_type_id',
-            'bank': 'bank_id'
-        }
-    )
+    for key, value in dict_tables.items():
+        df_sql = read_id_and_name_from_table(value)
 
-    df_transaction['category_id'] = add_fk_id_column(
-        df_transaction, 'categories', 'category_id'
-    )
-    df_transaction['transaction_type_id'] = add_fk_id_column(
-        df_transaction, 'transactions_type', 'transaction_type_id'
-    )
-    df_transaction['bank_id'] = add_fk_id_column(
-        df_transaction, 'banks', 'bank_id'
-    )
+        df_table = df_with_new_values(df, key, df_sql)
+        
+        if df_table is not None:
+            df_table.to_sql(
+                value,
+                con=engine,
+                if_exists="append",
+                index=False,
+                method="multi",
+                chunksize=500
+            )
+
+        df_transaction[f'{key}_id'] = add_fk_id_column(
+            df_transaction, df_sql, f'{key}_id'
+        )
 
     # TEMPORARIO - Será removido, apenas para salvar no banco enquanto não crio 
     # authenticação de usuarios
