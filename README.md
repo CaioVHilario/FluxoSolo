@@ -1,37 +1,47 @@
-# FluxoSolo 🚀
+# FluxoSolo
 
-**FluxoSolo** é um pipeline de ETL (*Extract, Transform, Load*) e dashboard financeiro desenvolvido para transformar o caos de extratos bancários em inteligência de negócio para trabalhadores autônomos e profissionais liberais.
+**FluxoSolo** é um pipeline ETL (Extract, Transform, Load) e dashboard financeiro, que nasceu de uma dor que meu pai tinha como trabalhador autonomo de não conseguir dedicar um tempo para gerenciar suas finanças.
 
-Diferente de planilhas manuais, o FluxoSolo automatiza a ingestão de dados brutos (PDF/CSV), aplicando regras de normalização e persistência em um banco de dados relacional para análise histórica e visualização de fluxo de caixa.
+Pensando nisso, comecei este projeto para facilitar a vida dele. O FluxoSolo automatixa a ingestão de (PDF/CSV), aplicando regras de normalização e persistência em um banco de dados relacional para análise historica e vizualização de fluxo de caixa.
 
 ---
 
-## 🛠️ Engenharia e Arquitetura de Dados
-
-O diferencial técnico deste projeto reside na sua **escalabilidade e aplicação de padrões de projeto**:
-
-* **Abstração de Parsers:** Utilização de **Classes Abstratas (ABC)** para definir o contrato de extração. Isso permite que novos bancos (Sicoob, NuBank, BB) sejam adicionados apenas implementando métodos específicos, mantendo o núcleo da aplicação (Core) intacto.
-* **Resiliência de Ingestão:** Lógica avançada para lidar com variações de *encoding* (UTF-8 e Latin-1) e caracteres invisíveis de sistema (BOM), garantindo a leitura correta de extratos de bancos tradicionais e fintechs.
-* **Camada de Persistência:** Implementação de um ORM com **SQLAlchemy** para garantir a integridade referencial e facilitar futuras migrações de banco de dados (ex: SQLite para PostgreSQL).
-* **Data Cleaning:** Pipeline com Pandas para limpeza de caracteres especiais, conversão de tipos (casting) e padronização de sinais monetários para análise estatística.
-
-## ✨ Funcionalidades Principais
-
-* ✅ **Ingestão Multi-formato:** Suporte a extratos em PDF (via `pdfplumber`) e CSV.
-* ✅ **ETL Automático:** Normalização de datas e valores para um formato padrão de banco de dados.
-* ✅ **Dashboard Interativo:** Visualização dinâmica de Receitas vs. Despesas e categorização de fluxo com **Plotly**.
-* ✅ **Validação de Dados:** Interface que apresenta um *preview* dos dados limpos antes da persistência final no banco.
-
-## 🧰 Stack Tecnológica
+## Tecnologias Utilizadas
 
 * **Linguagem:** Python 3.12+
 * **Gestão de Dependências:** Poetry
 * **Processamento de Dados:** Pandas, pdfplumber
-* **Banco de Dados:** SQLAlchemy, SQLite
+* **Banco de Dados:** SQLAlchemy, SQLite, pydantic, alembic
 * **Interface e Visualização:** Streamlit, Plotly
-* **Qualidade de Código:** Pytest, Ruff (Linter/Formatter), Taskipy
+* **Qualidade de Código:** Ruff (Linter/Formatter), Taskipy
 
-## 🏗️ Estrutura do Projeto
+## Pré-requisitos
+
+* Python >= 3.14
+* Poetry
+
+## Como Executar
+
+### 1. Clone o repositório
+
+```bash
+    git clone https://github.com/seu-usuario/fluxosolo.git
+    cd fluxosolo
+```
+
+### 2. Instale as dependências
+
+```bash
+    poetry install
+```
+
+### 3. Execute a aplicação
+
+```bash
+    poetry run task run
+```
+
+## Estrutura do Projeto
 
 ```bash
 ├── fluxosolo/
@@ -46,35 +56,34 @@ O diferencial técnico deste projeto reside na sua **escalabilidade e aplicaçã
 └── pyproject.toml    # Configuração de ferramentas e dependências
 ```
 
-## 🚀 Como Executar
+## Como Usar
 
-Pré-requisitos: Ter o Python e o Poetry instalados.
+A aplicação tem apenas uma tela com uma barra lateral, onde é possivel subir os extratos bancarios, e apos subir extratos na mesma barra lateral é possivel filtrar os dados para os graficos, que ficam na tela principal.
 
-### Clone o repositório:
+![funcionamento](assets/appFluxoSolo.gif)
 
-```bash
-    git clone https://github.com/seu-usuario/fluxosolo.git
-    cd fluxosolo
-```
+## ✨ Funcionalidades Principais
 
-### Instale as dependências:
-    
-```bash
-    poetry install
-```
+Este projeto esta em desenvolvimento ativo.
 
-### Execute a aplicação:
+* [x] **Ingestão Multi-formato:** Suporte a extratos em PDF (via `pdfplumber`) e CSV.
+* [x] **ETL Automático:** Normalização de datas e valores para um formato padrão de banco de dados.
+* [x] **Dashboard Interativo:** Visualização dinâmica de Receitas vs. Despesas e categorização de fluxo com **Plotly** e **Streamlit**.
+* [x] **Validação de Dados:** Interface que apresenta um *preview* dos dados limpos antes da persistência final no banco.
+* [x] Normalização para 3NF: Reestruturação do esquema SQL para garantir integridade referencial e eficiência.
+* [ ] Autorização e Authenticação de usuário com **FastAPI**
+* [ ] Testes automatizados com **Pytest**
+* [ ] PostgreSQL + Docker + Deploy
+* [ ] Consolidação de Cartão de Crédito: Lógica de merge para evitar dupla contagem entre pagamento de fatura e transações individuais.
+* [ ] Expansão da Biblioteca de Parsers: Implementação de conectores para Inter, Santander e Itaú.
+* [ ] Criar mais métricas e gráficos no Dashboard.
+* [ ] Ciência de dados
 
-```bash
-    poetry run task run
-```
+## Decisões Técnicas
 
-## Próximos passos
+O diferencial técnico deste projeto reside na sua **escalabilidade e aplicação de padrões de projeto**:
 
-[ ] Normalização para 3NF: Reestruturação do esquema SQL para garantir integridade referencial e eficiência.
-
-[ ] Consolidação de Cartão de Crédito: Lógica de merge para evitar dupla contagem entre pagamento de fatura e transações individuais.
-
-[ ] Expansão da Biblioteca de Parsers: Implementação de conectores para Inter, Santander e Itaú.
-
-[ ] Advanced Analytics: Dashboard com filtros dinâmicos por período, banco e centro de custos.
+* **Abstração de Parsers:** Utilização de **Classes Abstratas (ABC)** para definir o contrato de extração. Isso permite que novos bancos (Sicoob, NuBank, BB) sejam adicionados apenas implementando métodos específicos, mantendo o núcleo da aplicação (Core) intacto.
+* **Resiliência de Ingestão:** Lógica avançada para lidar com variações de *encoding* (UTF-8 e Latin-1) e caracteres invisíveis de sistema (BOM), garantindo a leitura correta de extratos de bancos tradicionais e fintechs.
+* **Camada de Persistência:** Implementação de um ORM com **SQLAlchemy** para garantir a integridade referencial e facilitar futuras migrações de banco de dados (ex: SQLite para PostgreSQL).
+* **Data Cleaning:** Pipeline com Pandas para limpeza de caracteres especiais, conversão de tipos (casting) e padronização de sinais monetários para análise estatística.
