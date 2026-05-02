@@ -22,7 +22,7 @@ class BancoBrasiParser(BaseParser):
             date_format="%d/%m/%Y",
         )
 
-        # Renomeia as colunas do dataframe para nomes com caracteres normais 
+        # Renomeia as colunas do dataframe para nomes com caracteres normais
         # e tira a coluna 'N documento'
         df_bancoBrasil.columns = [
             "date",
@@ -85,9 +85,9 @@ class BancoBrasiParser(BaseParser):
             "TEDinternet": "Cobrança TED",
             "Estorno de Débito": "Estorno",
         }
-        df_bancoBrasil["transaction_type"] = df_bancoBrasil["transaction_type"].replace(
-            map_rename_transaction
-        )
+        df_bancoBrasil["transaction_type"] = df_bancoBrasil[
+            "transaction_type"
+        ].replace(map_rename_transaction)
 
         # Criando coluna de categoria do gasto
         map_category = {
@@ -106,9 +106,9 @@ class BancoBrasiParser(BaseParser):
             "Cobrança TED": "Taxas Bancárias",
             "Estorno": "Ajustes",
         }
-        df_bancoBrasil["category"] = df_bancoBrasil["transaction_type"].replace(
-            map_category
-        )
+        df_bancoBrasil["category"] = df_bancoBrasil[
+            "transaction_type"
+        ].replace(map_category)
 
         df_bancoBrasil["bank"] = "Banco do Brasil"
 

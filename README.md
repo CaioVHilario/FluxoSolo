@@ -35,11 +35,31 @@ Pensando nisso, comecei este projeto para facilitar a vida dele. O FluxoSolo aut
     poetry install
 ```
 
-### 3. Execute a aplicação
+### 3. Execute a aplicação streamlit
+
+```bash
+    poetry run task dashboard
+```
+
+### 4. Execute a API de auhtenticação de usuario
 
 ```bash
     poetry run task run
 ```
+
+## Como acessar a aplicação
+
+### 1. Acesasr a aplicação streamlit
+
+[http://localhost:8501]( http://localhost:8501)
+
+### 2. Acessar a documentação da API
+
+**Documentação:**
+[http://localhost:8000/redoc]( http://localhost:8000/redoc)
+
+**Documentação Interativa (swagger):**
+[http://localhost:8000/docs]( http://localhost:8000/docs)
 
 ## Estrutura do Projeto
 
@@ -62,7 +82,7 @@ A aplicação tem apenas uma tela com uma barra lateral, onde é possivel subir 
 
 ![funcionamento](assets/appFluxoSolo.gif)
 
-## ✨ Funcionalidades Principais
+## Funcionalidades Principais
 
 Este projeto esta em desenvolvimento ativo.
 

@@ -1,16 +1,16 @@
 import pandas as pd
-from sqlalchemy.exc import OperationalError
 import streamlit as st
+from sqlalchemy.exc import OperationalError
 
 
 def verify_database(df: pd.DataFrame):
 
-    conn = st.connection('sql')
+    conn = st.connection("sql")
 
     params = {
-        'init': str(df['date'].min()),
-        'end': str(df['date'].max()),
-        'bank': str(df['bank'].min()),
+        "init": str(df["date"].min()),
+        "end": str(df["date"].max()),
+        "bank": str(df["bank"].min()),
     }
 
     query_verification_extract = """

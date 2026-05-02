@@ -36,13 +36,13 @@ st.markdown(
 conn = st.connection("sql")
 
 df_transactions = conn.query(
-    "SELECT t.date, t.value, t.details, b.name AS 'bank', " \
-    "c.name AS 'category', tt.name AS 'transaction' " \
-    "FROM transactions t " \
-    "JOIN banks b ON b.id = t.bank_id " \
-    "JOIN categories c ON c.id = t.category_id " \
+    "SELECT t.date, t.value, t.details, b.name AS 'bank', "
+    "c.name AS 'category', tt.name AS 'transaction' "
+    "FROM transactions t "
+    "JOIN banks b ON b.id = t.bank_id "
+    "JOIN categories c ON c.id = t.category_id "
     "JOIN transactions_type tt ON tt.id = t.transaction_type_id",
-    ttl=600
+    ttl=600,
 )
 
 side_bar()

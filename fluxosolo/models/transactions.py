@@ -1,12 +1,12 @@
 from datetime import datetime
 
-from sqlalchemy import Numeric, func, ForeignKey
+from sqlalchemy import ForeignKey, Numeric, func
 from sqlalchemy.orm import (
     Mapped,
     mapped_as_dataclass,
     mapped_column,
     registry,
-    relationship
+    relationship,
 )
 
 table_registry = registry()
@@ -29,11 +29,11 @@ class User:
         init=False, server_default=func.now(), onupdate=func.now()
     )
 
-    transactions: Mapped[list['Transaction']] = relationship(
+    transactions: Mapped[list[Transaction]] = relationship(
         init=False,
-        back_populates='user',
-        cascade='all, delete-orphan',
-        lazy='selectin'
+        back_populates="user",
+        cascade="all, delete-orphan",
+        lazy="selectin",
     )
 
 
@@ -44,8 +44,8 @@ class Category:
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
     name: Mapped[str]
 
-    transactions: Mapped[list['Transaction']] = relationship(
-        init=False, back_populates='category', lazy='selectin'
+    transactions: Mapped[list[Transaction]] = relationship(
+        init=False, back_populates="category", lazy="selectin"
     )
 
 
@@ -56,8 +56,8 @@ class TransactionType:
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
     name: Mapped[str]
 
-    transactions: Mapped[list['Transaction']] = relationship(
-        init=False, back_populates='transaction_type', lazy='selectin'
+    transactions: Mapped[list[Transaction]] = relationship(
+        init=False, back_populates="transaction_type", lazy="selectin"
     )
 
 
@@ -68,8 +68,8 @@ class Bank:
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
     name: Mapped[str]
 
-    transactions: Mapped[list['Transaction']] = relationship(
-        init=False, back_populates='bank', lazy='selectin'
+    transactions: Mapped[list[Transaction]] = relationship(
+        init=False, back_populates="bank", lazy="selectin"
     )
 
 
@@ -81,12 +81,12 @@ class Transaction:
     date: Mapped[datetime]
     value: Mapped[float] = mapped_column(Numeric(10, 2))
 
-    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
-    category_id: Mapped[int] = mapped_column(ForeignKey('categories.id'))
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"))
     transaction_type_id: Mapped[int] = mapped_column(
-        ForeignKey('transactions_type.id')
+        ForeignKey("transactions_type.id")
     )
-    bank_id: Mapped[int] = mapped_column(ForeignKey('banks.id'))
+    bank_id: Mapped[int] = mapped_column(ForeignKey("banks.id"))
 
     details: Mapped[str | None] = mapped_column(default=None)
 
@@ -97,15 +97,15 @@ class Transaction:
         init=False, server_default=func.now(), onupdate=func.now()
     )
 
-    user: Mapped['User'] = relationship(
-        init=False, back_populates='transactions'
+    user: Mapped[User] = relationship(
+        init=False, back_populates="transactions"
     )
-    category: Mapped['Category'] = relationship(
-        init=False, back_populates='transactions'
-        )
-    transaction_type: Mapped['TransactionType'] = relationship(
-        init=False, back_populates='transactions'
+    category: Mapped[Category] = relationship(
+        init=False, back_populates="transactions"
     )
-    bank: Mapped['Bank'] = relationship(
-        init=False, back_populates='transactions'
+    transaction_type: Mapped[TransactionType] = relationship(
+        init=False, back_populates="transactions"
+    )
+    bank: Mapped[Bank] = relationship(
+        init=False, back_populates="transactions"
     )

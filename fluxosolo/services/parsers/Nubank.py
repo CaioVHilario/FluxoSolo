@@ -32,7 +32,9 @@ class NubankParser(BaseParser):
         df_nubank = df_nubank.rename(columns=map_rename)
 
         # Renomeia transações para padronizar com os outros bancos
-        df_nubank["transaction_type"] = df_nubank["transaction_type"].str.strip()
+        df_nubank["transaction_type"] = df_nubank[
+            "transaction_type"
+        ].str.strip()
         map_rename_transaction = {
             "Compra no débito": "Compra Débito",
             "Transferência recebida pelo Pix": "Pix Recebido",
@@ -50,7 +52,9 @@ class NubankParser(BaseParser):
             "Pagamento Fatura Cartão": "Cartão de credito",
             "Pix Enviado": "Transferência",
         }
-        df_nubank["category"] = df_nubank["transaction_type"].replace(map_category)
+        df_nubank["category"] = df_nubank["transaction_type"].replace(
+            map_category
+        )
 
         # Adiciona coluna referente ao banco
         df_nubank["bank"] = "NuBank"

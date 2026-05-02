@@ -152,7 +152,9 @@ class SicoobParser(BaseParser):
             df_sicoob = df_sicoob.rename(columns=map_rename)
 
             # Renomeando as transaçãoes para padronizar com todos os bancos
-            df_sicoob["transaction_type"] = df_sicoob["transaction_type"].str.strip()
+            df_sicoob["transaction_type"] = df_sicoob[
+                "transaction_type"
+            ].str.strip()
             map_rename_transaction = {
                 "COMP MASTER MAESTRO": "Compra Débito",
                 "CRED.TR.CT.INTERCRE": "Crédito/Rendimento",
@@ -169,9 +171,9 @@ class SicoobParser(BaseParser):
                 "DÉB.TRANSF.POU.INTE": "Transferência Interna",
                 "SAQUE - BANCO24HORA": "Saque",
             }
-            df_sicoob["transaction_type"] = df_sicoob["transaction_type"].replace(
-                map_rename_transaction
-            )
+            df_sicoob["transaction_type"] = df_sicoob[
+                "transaction_type"
+            ].replace(map_rename_transaction)
 
             # Criando coluna category
             map_category = {
