@@ -50,7 +50,7 @@ def persist_on_db(df: pd.DataFrame):
 
     # TEMPORARIO - Será removido, apenas para salvar no banco enquanto não crio
     # authenticação de usuarios
-    df_transaction["user_id"] = 1
+    df_transaction["user_id"] = 2
 
     # Armazena o dataframe no banco de dados
     df_transaction.to_sql(

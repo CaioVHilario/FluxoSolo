@@ -1,41 +1,40 @@
+from http import HTTPStatus
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
-from typing import Annotated
-from http import HTTPStatus
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from fluxosolo.core.database import get_session
-from fluxosolo.schemas import Token
+from fluxosolo.core.secrets import creat_acces_token, verify_password
 from fluxosolo.models.transactions import User
-from fluxosolo.secrets import verify_password, creat_acces_token
+from fluxosolo.schemas import Token
 
-router = APIRouter(prefix='/auth', tags=['auth'])
+router = APIRouter(prefix="/auth", tags=["auth"])
 TSession = Annotated[Session, Depends(get_session)]
 OAuth2Form = Annotated[OAuth2PasswordRequestForm, Depends()]
 
 
-@router.post('/token', response_model=Token)
+@router.post("/token", response_model=Token)
 def login_for_access_token(
-    form_data: OAuth2Form, 
+    form_data: OAuth2Form,
     session: TSession,
 ):
-    user = session.scalar(
-        select(User).where(User.email == form_data.username)
-    )
+    user = session.scalar(select(User).where(User.email == form_data.username))
 
     if not user:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND,
-            detail='Incorrect email or password'
+            detail="Incorrect email or password",
         )
 
     if not verify_password(form_data.password, user.password):
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND,
-            detail='Incorrect email or password'
+            detail="Incorrect email or password",
         )
 
-    access_token = creat_acces_token(data={'sub': user.email})
+    access_token = creat_acces_token(data={"sub": user.email})
 
-    return {'access_token': access_token, 'token_type': 'bearer'}
+    return {"access_token": access_token, "token_type": "bearer"}
