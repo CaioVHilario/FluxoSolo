@@ -1,10 +1,18 @@
 import streamlit as st
 
 from fluxosolo.services.parsers.main import read_extract_file
-from fluxosolo.views.popups import popup_data_confirmation
+from fluxosolo.components.popups import popup_data_confirmation
 
 
 def side_bar():
+
+    # Botão de Logout
+    if st.sidebar.button("Sair (Logout)"):
+        # Limpa a memória
+        st.session_state["logado"] = False
+        st.session_state["token"] = None
+        # Redireciona para o login
+        st.switch_page("app_streamlit.py")
 
     # id unico da session para controloar o widget de upload de arquivos, para
     # forçar o reset do widget a cada upload e evitar bugs de arquivos e evitar que

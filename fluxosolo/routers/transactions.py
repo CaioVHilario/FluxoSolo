@@ -37,7 +37,7 @@ async def create_transactions(
     try:
         df = read_extract_file(file_name, bytes_content)
 
-        persist_on_db(df)
+        persist_on_db(df, current_user.id)
 
     except UnsupportedFormatErro as e:
         raise HTTPException(

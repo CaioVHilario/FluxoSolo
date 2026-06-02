@@ -68,12 +68,16 @@ Pensando nisso, comecei este projeto para facilitar a vida dele. O FluxoSolo aut
 │   ├── core/         # Configurações de engine, modelos e sessões de banco
 │   ├── data/         # Extratos gerados para teste da aplicação
 │   ├── models/       # Criação da tabela do banco de dados
+│   ├── routers/      # Endpoints FastAPI
+│   │   ├── users.py        # CRUD de usuários e autenticação
+│   │   └── transactions.py # Endpoints de transações e upload de extratos
+│   ├── schemas.py    # Schemas Pydantic (request/response models)
 │   ├── services/     # Lógica de negócio: Parsers (Abstract Classes) e pipeline ETL
 │   ├── views/        # Frontend Streamlit e componentes de visualização
 │   └── app.py        # Ponto de entrada da aplicação
 ├── tests/            # Testes unitários focados na lógica de limpeza de dados
 ├── migrations/       # Migração de banco de dados via alembic
-└── pyproject.toml    # Configuração de ferramentas e dependências
+└── pyproject.toml
 ```
 
 ## Como Usar
@@ -91,7 +95,7 @@ Este projeto esta em desenvolvimento ativo.
 * [x] **Dashboard Interativo:** Visualização dinâmica de Receitas vs. Despesas e categorização de fluxo com **Plotly** e **Streamlit**.
 * [x] **Validação de Dados:** Interface que apresenta um *preview* dos dados limpos antes da persistência final no banco.
 * [x] Normalização para 3NF: Reestruturação do esquema SQL para garantir integridade referencial e eficiência.
-* [ ] Autorização e Authenticação de usuário com **FastAPI**
+* [x] Autorização e Authenticação de usuário com **FastAPI**
 * [ ] Testes automatizados com **Pytest**
 * [ ] PostgreSQL + Docker + Deploy
 * [ ] Consolidação de Cartão de Crédito: Lógica de merge para evitar dupla contagem entre pagamento de fatura e transações individuais.
