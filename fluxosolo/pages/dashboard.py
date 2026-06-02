@@ -1,6 +1,6 @@
 import streamlit as st
 
-from fluxosolo.views.charts import (
+from fluxosolo.components.charts import (
     plot_chart_donut_category_income,
     plot_chart_donut_category_outgoing,
     plot_chart_line_evolution_transactions,
@@ -8,7 +8,7 @@ from fluxosolo.views.charts import (
     print_metrics_outgoing,
     table_transaction_history,
 )
-from fluxosolo.views.processing import (
+from fluxosolo.utils.processing import (
     prepare_data_chart_donut_category_income,
     prepare_data_chart_donut_category_outgoing,
     prepare_data_chart_line_evolution_transactions,
@@ -16,9 +16,10 @@ from fluxosolo.views.processing import (
     prepare_data_metrics_outgoing,
     prepare_data_sidebar,
 )
-from fluxosolo.views.sidebar import filter_sidebar, side_bar
+from fluxosolo.components.sidebar import filter_sidebar, side_bar
 
 st.set_page_config(layout="wide", page_title="Gestão Financeira")
+
 
 # Injeta CSS para diminuir a margem superior da página
 st.markdown(
@@ -33,7 +34,16 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+if "logado" not in st.session_state or not st.session_state["logado"]:
+    st.markdown("   ")
+    st.markdown("   ")
+    st.warning("Você precisa fazer login para acessar esta página.")
+    st.switch_page("fluxosolo/app_streamlit.py") # Manda de volta pro login
+    st.stop() # Para a execução do código aqui
+
+
 conn = st.connection("sql")
+current_user_id = st.session_state.get('user_id')
 
 df_transactions = conn.query(
     "SELECT t.date, t.value, t.details, b.name AS 'bank', "
@@ -41,7 +51,9 @@ df_transactions = conn.query(
     "FROM transactions t "
     "JOIN banks b ON b.id = t.bank_id "
     "JOIN categories c ON c.id = t.category_id "
-    "JOIN transactions_type tt ON tt.id = t.transaction_type_id",
+    "JOIN transactions_type tt ON tt.id = t.transaction_type_id "
+    "WHERE t.user_id = :userid",
+    params={'userid': current_user_id},
     ttl=600,
 )
 
@@ -97,6 +109,8 @@ if not df_transactions.empty:
         )
 
 else:
+    st.markdown("   ")
+    st.markdown("   ")
     st.info("Aguardando dados para gerar gráficos")
 
 # ------------------------ Histórico de transações ------------------------------

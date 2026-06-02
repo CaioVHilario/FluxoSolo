@@ -8,7 +8,7 @@ from fluxosolo.services.transform_df import (
 )
 
 
-def persist_on_db(df: pd.DataFrame):
+def persist_on_db(df: pd.DataFrame, id: int):
     # Garante que a data está em datetime no dataframe
     if "date" in df.columns:
         df["date"] = pd.to_datetime(df["date"])
@@ -48,9 +48,8 @@ def persist_on_db(df: pd.DataFrame):
             df_transaction, df_sql, f"{key}_id"
         )
 
-    # TEMPORARIO - Será removido, apenas para salvar no banco enquanto não crio
     # authenticação de usuarios
-    df_transaction["user_id"] = 1
+    df_transaction["user_id"] = id
 
     # Armazena o dataframe no banco de dados
     df_transaction.to_sql(

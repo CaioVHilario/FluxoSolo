@@ -1,3 +1,5 @@
+import io
+
 import pandas as pd
 
 from fluxosolo.services.parsers.Base import BaseParser
@@ -7,10 +9,12 @@ class NubankParser(BaseParser):
     def __init__(self, encoding):
         self.encoding = encoding
 
-    def _extract_data(self, filepath: str) -> pd.DataFrame:
+    def _extract_data(self, bytes_content: bytes) -> pd.DataFrame:
+
+        file = io.BytesIO(bytes_content)
         # Lê arquivo csv
         df_nubank = pd.read_csv(
-            filepath,
+            file,
             parse_dates=["Data"],
             date_format="%d/%m/%Y",
             encoding=self.encoding,

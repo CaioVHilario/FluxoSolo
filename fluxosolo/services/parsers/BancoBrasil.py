@@ -1,3 +1,5 @@
+import io
+
 import pandas as pd
 
 from fluxosolo.services.parsers.Base import BaseParser
@@ -11,12 +13,13 @@ class BancoBrasiParser(BaseParser):
     def __init__(self, encoding):
         self.encoding = encoding
 
-    def _extract_data(self, filepath: str) -> pd.DataFrame:
+    def _extract_data(self, bytes_content: bytes) -> pd.DataFrame:
+
+        file = io.BytesIO(bytes_content)
 
         # Leo csv e armazena em dataframe
-        # df_bancoBrasil = pd.read_csv(filepath, encoding=self.encoding, parse_dates=['Data'], date_format='%d/%m/%Y')
         df_bancoBrasil = pd.read_csv(
-            filepath,
+            file,
             encoding="latin-1",
             parse_dates=["Data"],
             date_format="%d/%m/%Y",

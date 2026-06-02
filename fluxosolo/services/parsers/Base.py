@@ -14,13 +14,13 @@ class BaseParser(ABC):
         "category",
     ]
 
-    def parser(self, filepath: str) -> pd.DataFrame:
+    def parser(self, bytes_content: bytes) -> pd.DataFrame:
 
-        raw_df = self._extract_data(filepath)
+        raw_df = self._extract_data(bytes_content)
         return self._standardize_structure(raw_df)
 
     @abstractmethod
-    def _extract_data(self, filepath: str) -> pd.DataFrame:
+    def _extract_data(self, bytes_content: bytes) -> pd.DataFrame:
         pass
 
     def _standardize_structure(self, df: pd.DataFrame) -> pd.DataFrame:
