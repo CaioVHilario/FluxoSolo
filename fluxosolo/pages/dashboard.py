@@ -7,6 +7,7 @@ from fluxosolo.components.charts import (
     print_metrics_income,
     print_metrics_outgoing,
     table_transaction_history,
+    plot_chart_horizontal_bar
 )
 from fluxosolo.utils.processing import (
     prepare_data_chart_donut_category_income,
@@ -15,6 +16,7 @@ from fluxosolo.utils.processing import (
     prepare_data_metrics_income,
     prepare_data_metrics_outgoing,
     prepare_data_sidebar,
+    prepare_data_horizontal_bar_outgoing
 )
 from fluxosolo.components.sidebar import filter_sidebar, side_bar
 
@@ -94,6 +96,9 @@ if not df_transactions.empty:
 
         df_chart = prepare_data_chart_line_evolution_transactions(df_year)
         plot_chart_line_evolution_transactions(df_chart, year_selected)
+
+        df_top5 = prepare_data_horizontal_bar_outgoing(df_filtered)
+        plot_chart_horizontal_bar(df_top5)
 
     with right_column:
         df_donut_income = prepare_data_chart_donut_category_income(df_filtered)

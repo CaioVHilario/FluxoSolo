@@ -149,3 +149,19 @@ def prepare_data_metrics_income(
         difference = income - income_before
 
     return income, difference
+
+
+# ------------------- Cálculo do gráfico de top5 gastos -----------------------
+
+
+@st.cache_data
+def prepare_data_horizontal_bar_outgoing(df_filtered):
+    df_gastos = df_filtered[df_filtered['type'] == 'Gastos'].copy()
+    df_gastos["value"] = df_gastos["value"]*(-1)
+
+    return (
+        df_gastos.groupby("details", as_index=False)["value"]
+        .sum()
+        .nlargest(5, "value")
+        .sort_values("value", ascending=False)
+    )
