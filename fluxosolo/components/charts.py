@@ -148,3 +148,28 @@ def plot_chart_line_evolution_transactions(df_chart, year_selected):
 def table_transaction_history(df_banco):
     st.subheader("Histórico das transações")
     st.dataframe(df_banco)
+    
+
+# ------------------------ Gráfico top 5 gastos ------------------------------
+
+
+def plot_chart_horizontal_bar(df_top5):
+    fig = px.bar(
+        df_top5, 
+        x='value', 
+        y='details',
+        orientation='h',
+        text_auto='.2f', 
+        color_discrete_sequence=px.colors.sequential.Reds_r,
+    )
+
+    # Ajusta o layout para a maior barra ficar no topo
+    fig.update_layout(
+        yaxis={'categoryorder':'total ascending'},
+        xaxis_title="Valor (R$)",
+        yaxis_title="",
+        showlegend=False
+    )
+
+    # Renderiza no Streamlit
+    st.plotly_chart(fig, width="stretch")

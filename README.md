@@ -101,7 +101,7 @@ Este projeto esta em desenvolvimento ativo.
 * [ ] Consolidação de Cartão de Crédito: Lógica de merge para evitar dupla contagem entre pagamento de fatura e transações individuais.
 * [ ] Expansão da Biblioteca de Parsers: Implementação de conectores para Inter, Santander e Itaú.
 * [ ] Criar mais métricas e gráficos no Dashboard.
-* [ ] Ciência de dados
+* [ ] Ciência de dados (Implementação de um motor de categorização usando NLP ou LLMs para classificar as transações substituindo as categorias literais do banco.)
 
 ## Decisões Técnicas
 
