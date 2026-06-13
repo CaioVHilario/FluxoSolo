@@ -1,0 +1,23 @@
+services:
+  fluxosolo_database:
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=fluxosolo_user
+      - POSTGRES_PASSWORD=fluxosolo_password
+      - POSTGRES_DB=fluxosolo_database
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  fluxosolo_app:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - fluxosolo_database
+    env_file:
+      - .env
+
+volumes:
+  pgdata:
